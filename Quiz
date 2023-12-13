@@ -1,0 +1,216 @@
+in.dart';
+import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+
+QuizBrian quizBrian = QuizBrian();
+void main() => runApp(Quizzler());
+
+class Quizzler extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.grey.shade900,
+        body: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            child: QuizPage(),
+          )
+        ),
+      ),
+
+    );
+  }
+}
+
+class QuizPage extends StatefulWidget {
+  @override
+  _QuizPageState createState() => _QuizPageState();
+}
+
+
+class _QuizPageState extends State<QuizPage> {
+  List<Icon> scoreKeeper = [];
+
+  void showAlertDialog() {
+
+    Alert(context: context,
+        title: "Finished!",
+        desc: "You have reached the end of the quiz!").show();
+  }
+
+  Icon getIconFromAnswer(bool goodAnswer) {
+    if (goodAnswer) {
+      return Icon(
+        Icons.check,
+        color: Colors.green,
+      );
+    } else {
+      return Icon(
+        Icons.close,
+        color: Colors.red,
+      );
+    }
+  }
+  void checkAnswer(bool userAnswer){
+setState(() {
+  if (quizBrian.isFinished()) {
+    showAlertDialog();
+    resetQuiz();
+  } else scoreKeeper.add(getIconFromAnswer(
+      quizBrian.checkAnswer(userAnswer)));
+  quizBrian.nextQuestion();
+});
+
+
+  }
+  void resetQuiz() {
+    quizBrian.reset();
+    scoreKeeper.clear();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Expanded(
+          flex: 5,
+          child: Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Center(
+              child: Text(
+                quizBrian.getQuestionText(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 25.0,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.all(15.0),
+            child: TextButton(
+              child: Text(
+                'True',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.0,
+                ),
+              ),
+              onPressed: () {
+    checkAnswer(true);
+
+                },
+            ),
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.all(15.0),
+            child: TextButton(
+              child: Text(
+                'False',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () {
+
+checkAnswer(false);
+              },
+            ),
+          ),
+        ),
+Row(children: scoreKeeper,)
+      ],
+    );
+  }
+}
+
+
+import 'question.dart';
+
+class QuizBrian {
+  int _questionNumber = 0;
+
+  List<Question> _questionBank = [
+    Question(questionText: 'You can lead a cow down stairs but not up stairs.',
+        answerText: false),
+    Question(
+        questionText: 'Approximately one quarter of human bones are in the feet.',
+        answerText: true),
+    Question(questionText: 'A slug\'s blood is green.', answerText: true),
+    Question(questionText: 'Some cats are actually allergic to humans',
+        answerText: true),
+    Question(questionText: 'You can lead a cow down stairs but not up stairs.',
+        answerText: false),
+    Question(
+        questionText: 'Approximately one quarter of human bones are in the feet.',
+        answerText: true),
+    Question(questionText: 'A slug\'s blood is green.', answerText: true),
+    Question(questionText: 'Buzz Aldrin\'s mother\'s maiden name was \"Moon\".',
+        answerText: true),
+    Question(questionText: 'It is illegal to pee in the Ocean in Portugal.',
+        answerText: true),
+    Question(
+        questionText: 'No piece of square dry paper can be folded in half more than 7 times.',
+        answerText: false),
+    Question(
+        questionText: 'In London, UK, if you happen to die in the House of Parliament, you are technically entitled to a state funeral, because the building is considered too sacred a place.',
+        answerText: true),
+    Question(
+        questionText: 'The loudest sound produced by any animal is 188 decibels. That animal is the African Elephant.',
+        answerText: false),
+    Question(
+        questionText: 'The total surface area of two human lungs is approximately 70 square metres.',
+        answerText: true),
+    Question(questionText: 'Google was originally called \"Backrub\".',
+        answerText: true),
+    Question(
+        questionText: 'Chocolate affects a dog\'s heart and nervous system; a few ounces are enough to kill a small dog.',
+        answerText: true),
+    Question(
+        questionText: 'In West Virginia, USA, if you accidentally hit an animal with your car, you are free to take it home to eat.',
+        answerText: true),
+  ];
+
+  void nextQuestion() {
+    if (_questionNumber < _questionBank.length - 1) {
+      _questionNumber++;
+    }
+  }
+
+
+  String getQuestionText() {
+    return _questionBank[_questionNumber].questionText;
+  }
+
+  bool getAnswerText() {
+    return _questionBank[_questionNumber].answerText;
+  }
+  bool checkAnswer(bool userAnswer) {
+    return userAnswer == getAnswerText();
+  }
+  bool isFinished() {
+    if (_questionNumber >= _questionBank.length - 1) {
+
+      print('Now returning true');
+      return true;
+
+    } else {
+      return false;
+    }
+
+  }
+  void reset() {
+    _questionNumber = 0;
+  }
+
+}
+
